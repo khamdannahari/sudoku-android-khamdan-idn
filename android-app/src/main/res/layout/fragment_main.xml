@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright 2018 Google LLC
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  ~
+  -->
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools">
+
+  <data>
+
+    <variable
+      name="boardvm"
+      type="me.kalicinski.sudoku.BoardViewModel" />
+  </data>
+
+  <androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="me.kalicinski.sudoku.MainActivity">
+
+    <View
+      android:layout_width="match_parent"
+      android:layout_height="350dp"
+      android:background="#0a3d62"
+      app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+      android:id="@+id/textViewTitle"
+      style="@style/TextAppearance.AppCompat.Display1"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginEnd="8dp"
+      android:layout_marginStart="8dp"
+      android:layout_marginTop="16dp"
+      android:text="@string/app_name"
+      android:textColor="#ffffff"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+      android:id="@+id/tvNewGame"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="16dp"
+      android:layout_marginTop="60dp"
+      android:background="#e55039"
+      android:drawablePadding="5dp"
+      android:enabled="@{!safeUnbox(boardvm.busy)}"
+      android:gravity="center_vertical"
+      android:onClick="@{() -> boardvm.generateNewBoard(true)}"
+      android:padding="8dp"
+      android:text="@string/new_game"
+      android:textAllCaps="true"
+      android:textColor="@android:color/white"
+      android:textStyle="bold"
+      app:drawableStartCompat="@drawable/ic_baseline_add_24"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/textViewTitle" />
+
+    <TextView
+      android:id="@+id/tvTimeRemainingLabel"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginEnd="16dp"
+      android:text="@string/time_remaining"
+      android:textColor="@android:color/white"
+      android:textSize="12sp"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintTop_toTopOf="@id/tvNewGame" />
+
+    <TextView
+      android:id="@+id/tvTimeRemaining"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginEnd="16dp"
+      android:layout_marginTop="4dp"
+      android:text="@string/_00_00_00"
+      android:textColor="@android:color/white"
+      android:textSize="20sp"
+      android:textStyle="bold"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/tvTimeRemainingLabel" />
+
+    <ImageView
+      android:id="@+id/ivPlayPauseLabel"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginEnd="4dp"
+      android:src="@drawable/ic_baseline_pause_24"
+      app:layout_constraintBottom_toBottomOf="@id/tvTimeRemaining"
+      app:layout_constraintEnd_toStartOf="@id/tvTimeRemaining"
+      app:layout_constraintTop_toTopOf="@id/tvTimeRemaining"
+      tools:ignore="ContentDescription" />
+
+    <androidx.cardview.widget.CardView
+      android:id="@+id/cardViewBoard"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginHorizontal="16dp"
+      android:layout_marginTop="20dp"
+      app:cardBackgroundColor="#3c6382"
+      app:cardCornerRadius="8dp"
+      app:cardElevation="0dp"
+      app:layout_constraintTop_toBottomOf="@id/tvNewGame">
+
+      <me.kalicinski.sudoku.BoardView
+        android:id="@+id/boardView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:layout_marginBottom="0dp"
+        android:background="#ffffff"
+        app:board="@{boardvm.board}"
+        app:layout_constraintBottom_toTopOf="@+id/generateButton"
+        app:layout_constraintDimensionRatio="w,1:1"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:mistakes="@{boardvm.mistakes}"
+        app:onBoardChangedListener="@{boardvm::setCell}"
+        tools:layout_constraintLeft_creator="1"
+        tools:layout_constraintRight_creator="1"
+        tools:layout_constraintTop_creator="1" />
+
+    </androidx.cardview.widget.CardView>
+
+    <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginHorizontal="16dp"
+      android:orientation="horizontal"
+      app:layout_constraintBottom_toTopOf="@id/tvSolveMe"
+      app:layout_constraintTop_toBottomOf="@id/cardViewBoard">
+
+      <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="@string/_1"
+        android:textColor="#0a3d62"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+      <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="@string/_2"
+        android:textColor="#0a3d62"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+      <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="@string/_3"
+        android:textColor="#0a3d62"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+      <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="@string/_4"
+        android:textColor="#0a3d62"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+      <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="@string/_5"
+        android:textColor="#0a3d62"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+      <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="@string/_6"
+        android:textColor="#0a3d62"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+      <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="@string/_7"
+        android:textColor="#0a3d62"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+      <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="@string/_8"
+        android:textColor="#0a3d62"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+      <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="@string/_9"
+        android:textColor="#0a3d62"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    </LinearLayout>
+
+    <TextView
+      android:id="@+id/tvSolveMe"
+      android:layout_width="match_parent"
+      android:layout_height="60dp"
+      android:background="#1dd1a1"
+      android:enabled="@{!safeUnbox(boardvm.busy)}"
+      android:gravity="center"
+      android:onClick="@{() -> boardvm.solveBoard()}"
+      android:text="@string/solve_me"
+      android:textAllCaps="true"
+      android:textColor="@android:color/white"
+      android:textSize="16sp"
+      android:textStyle="bold"
+      app:layout_constraintBottom_toBottomOf="parent" />
+
+    <Button
+      android:id="@+id/generateButton"
+      style="@style/Widget.AppCompat.Button.Borderless"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="0dp"
+      android:enabled="@{!safeUnbox(boardvm.busy)}"
+      android:onClick="@{() -> boardvm.generateNewBoard(true)}"
+      android:text="@string/generate"
+      android:visibility="gone"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintHorizontal_bias="0.5"
+      app:layout_constraintLeft_toLeftOf="parent"
+      app:layout_constraintRight_toLeftOf="@+id/solveButton" />
+
+    <Button
+      android:id="@+id/solveButton"
+      style="@style/Widget.AppCompat.Button.Borderless"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="0dp"
+      android:enabled="@{!safeUnbox(boardvm.busy)}"
+      android:onClick="@{() -> boardvm.solveBoard()}"
+      android:text="@string/solve"
+      android:visibility="gone"
+      app:layout_constraintLeft_toRightOf="@+id/generateButton"
+      app:layout_constraintRight_toLeftOf="@+id/checkButton"
+      app:layout_constraintTop_toTopOf="@+id/generateButton" />
+
+    <Button
+      android:id="@+id/checkButton"
+      style="@style/Widget.AppCompat.Button.Borderless"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="0dp"
+      android:enabled="@{!safeUnbox(boardvm.busy)}"
+      android:onClick="@{() -> boardvm.checkBoard()}"
+      android:text="@string/check"
+      android:visibility="gone"
+      app:layout_constraintLeft_toRightOf="@+id/solveButton"
+      app:layout_constraintRight_toRightOf="parent"
+      app:layout_constraintTop_toTopOf="@+id/solveButton" />
+
+  </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
